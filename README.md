@@ -249,7 +249,55 @@ esrally race --track=nyc_taxis --target-hosts=https://192.xxx.xxx.xxx:9200 --pip
 ```
 
 
+
+## Benchmark Summary (Elasticsearch Rally Result) ver.8.17.4
+Indexing Performance
+	•	Mean throughput: 1994.9 docs/sec (Approximately 2000 documents successfully indexed per second)
+	•	50th percentile (median latency): 2077ms (Half of the indexing operations completed within 2 seconds)
+	•	99th percentile latency: Some operations show slower performance (long-tail latency issue)
+
+Merge, Refresh, and Flush Performance
+	•	Merge throttle time detected: Indicates that merge operations were throttled due to disk I/O or CPU resource limits
+	•	Refresh operations: 1520 times
+	•	Flush operations: 556 times
+
+Garbage Collection
+	•	Old Generation GC time: 0 seconds → No memory issues (Good sign)
+	•	Young Generation GC time: Present, but within acceptable range
+
+Dataset and Storage
+	•	Dataset size: 38.25 GB (Large-scale indexing scenario)
+	•	Segment count: 153 segments → A higher segment count may impact search performance (merge tuning recommended)
+
+Query Performance
+
+KNN Search (Dense Vector Search)
+	•	Average throughput: 30 operations per second (stable performance)
+	•	50th percentile latency: 21.5ms (Half of the KNN search queries completed within 21ms)
+	•	99th percentile latency: Over 300ms → Some queries experienced higher latency (long-tail latency present)
+
+Script Score Query (Script-based scoring)
+	•	Average throughput: 5 operations per second (expected slower performance compared to KNN)
+	•	Latency behavior: Similar percentile latency as KNN but with lower throughput
+
+Latency Overview
+	•	Indexing (index-append):
+	•	Median latency: 2 seconds
+	•	99th percentile latency: 6.6 seconds → Long-tail latency observed, potential bottleneck
+	•	KNN Search:
+	•	Average latency: 20–30ms (Good)
+	•	99th percentile latency: Above 300ms → Some slow queries detected
+
+## Key Points
+	•	Indexing throughput: ~2000 docs/sec → Solid indexing performance
+	•	KNN Search throughput: ~30 ops/sec → Stable and consistent
+	•	Indexing latency spikes: Some operations affected by merge throttling and long-tail latency
+	•	Memory management: No Old Generation GC issues detected → Healthy memory usage
+	•	Search error rate: 0% → All scenarios executed successfully without failures
+
+
 Rally 2.12.0 공식문서 
 https://esrally.readthedocs.io/en/stable/
+
 공식 트랙 리포지토리
 https://github.com/elastic/rally-tracks
